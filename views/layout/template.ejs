@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="skillMap">
+<head>
+    <title>Test</title>
+
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="js/skill-map.js"></script>
+
+</head>
+<body ng-controller="SkillMapController">
+
+    <table class="table table-striped">
+        <tr>
+            <th>Skill</th>
+            <th class="text-center" ng-repeat="year in years">{{year}}</th>
+        </tr>
+        <tr ng-repeat="skill in skills">
+            <td class="col-sm-4"><input type="text" class="form-control input-sm" ng-model="skill.title" ng-change="setInputFields ()"></td>
+            <td ng-repeat="year in years"><input type="text" class="form-control input-sm" value=""/></td>
+        </tr>
+    </table>
+
+    <div class="col-sm-12">
+        <textarea class="form-control" rows="5" ng-model="skillsJson" ng-change="reloadSkillsFromJson ()"></textarea>
+    </div>
+
+    <div class="row text-center">
+        <button type="button" class="btn btn-primary" ng-click="regenerateSvgImage ()">Regenerate Image</button>
+        <button type="button" class="btn btn-primary">Download Image</button>
+    </div>
+
+    <div class="col-sm-12">
+        <img id="results-image" src="test.svg" class="img-responsive img-thumbnail"/>
+    </div>
+
+</body>
+</html>
