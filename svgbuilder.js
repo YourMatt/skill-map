@@ -58,7 +58,10 @@ exports.skillmap.svgbuilder = {
     },
 
     // builds the full skill map SVG based on the skill data provided
-    buildSkillMap: function (skills) {
+    buildSkillMap: function (skills, forceRealSize) {
+
+        // set to keep actual size for elements if requested, otherwise the multiplier is retained for better HTML view
+        if (forceRealSize) this.size.canvasMultipier = 1;
 
         var linearGradients = [];
         var stops = [];

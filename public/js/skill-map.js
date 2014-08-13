@@ -71,6 +71,13 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
 
     };
 
+    // prompts to download the SVG image - sends new request to server to ensure no scaling
+    scope.promptDownload = function () {
+
+        window.location = "skillmap.svg?download=1&instructions=" + scope.skillsJson;
+
+    },
+
     // rebuilds the image with the instructions provided by the current skill data
     scope.regenerateSvgImage = function () {
 

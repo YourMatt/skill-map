@@ -25,6 +25,7 @@ app.use(function(req, res, next) {
 app.route ("/*.svg").all (function (req, res) {
 
     var instructions = req.rawBody || req.query.instructions || ""; // pulls from raw post, then query string if none provided
+    var download = (req.query.download);
 
     res.type ("svg");
     console.log ("Requested SVG Image - Instructions: " + instructions);
@@ -35,7 +36,13 @@ app.route ("/*.svg").all (function (req, res) {
     catch (err) {}
 
     // build the skill map SVG
-    var svg = skillmapsvg.skillmap.svgbuilder.buildSkillMap (skills);
+    var svg = skillmapsvg.skillmap.svgbuilder.buildSkillMap (skills, download);
+
+    // set to prompt if requesting download
+    if (download) {
+        console.log ("attempting download");
+        res.setHeader ("Content-disposition", "attachment; filename=skillmap.svg");
+    }
 
     // return the SVG document
     res.send (svg);
