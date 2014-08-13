@@ -40,7 +40,18 @@ exports.skillmap.svgbuilder = {
 
     // specify the colors
     colors: {
-        graph: "#F00",                      // color inside the graphs
+        graph: "#F00",                      // color inside the graphs if variable colors not set
+        graph10: "#FF0000",                 // changes the colors based on the skill level
+        graph9: "#FF1800",                  // can remove this values or set to blank if want to use the solid color
+        graph8: "#FF3000",
+        graph7: "#FF4800",
+        graph6: "#FF6700",
+        graph5: "#FF7F00",
+        graph4: "#FF9700",
+        graph3: "#FFB000",
+        graph2: "#FFCE00",
+        graph1: "#FFE600",
+        graph0: "#FFFF00",
         line: "#000",                       // color of the bottom border lines and milestone markers
         textLabel: "#000",                  // color of the labels to the left of the graphs
         textMilestone: "#555"               // color of the milestone text
@@ -59,24 +70,36 @@ exports.skillmap.svgbuilder = {
 
             var skill = skills[i];
 
-            stops.push ({ stop: {
-                "@offset": "0%",
-                "@stop-color": this.colors.graph,
-                "@stop-opacity": "0"
-            }});
-            stops.push ({ stop: {
-                "@offset": "33.3%",
-                "@stop-color": this.colors.graph,
-                "@stop-opacity": "0.8"
-            }});
-            stops.push ({ stop: {
-                "@offset": "100%",
-                "@stop-color": this.colors.graph,
-                "@stop-opacity": "0.2"
-            }});
+            // build the gradient based upon the skill levels
+            stops = [];
+            var numSkillLevels = skill.skillLevels.length;
+            for (var j = 0; j < numSkillLevels; j++) {
+
+                // set the offset and opacity based on year position and specified skill level
+                var offset = Math.ceil (j / (numSkillLevels - 1) * 100);
+                var opacity = skill.skillLevels[j] / 10;
+
+                // set the color for this step - use variable colors if defined
+                var color = "";
+                if (this.colors.graph10) {
+                    eval("var color = this.colors.graph" + Math.ceil(opacity * 10));
+                }
+
+                // if variable colors not set, then use solid color
+                else {
+                    color = this.colors.graph;
+                }
+
+                stops.push ({ stop: {
+                    "@offset": offset + "%",
+                    "@stop-color": color,
+                    "@stop-opacity": opacity
+                }});
+
+            }
 
             linearGradients.push ({ linearGradient: {
-                "@id": "gradient-1",
+                "@id": "gradient-" + i,
                 "#list": stops
             }});
 
@@ -94,7 +117,7 @@ exports.skillmap.svgbuilder = {
                 "@y": this.getPositionUnits (this.pos.elementTopStart + this.pos.elementTopSpacing * i),
                 "@width": this.getPositionUnits (this.size.pageWidth - this.pos.graphLeftOffset),
                 "@height": this.getPositionUnits (this.size.graphHeight),
-                "@fill": "url(#gradient-1)"
+                "@fill": "url(#gradient-" + i + ")"
             }});
 
             // add the line under the gradient

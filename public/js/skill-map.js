@@ -1,7 +1,14 @@
 
 // data model for the skill data
-var Skill = (function () {
+var Skill = (function (years) {
     this.title = "";
+    this.skillLevels = new Array ();
+    this.startYear = years[0];
+    this.endYear = years[years.length - 1];
+
+    for (var i = 0; i < years.length; i++) {
+        this.skillLevels[this.skillLevels.length] = "";
+    }
 });
 
 // set up the angular module
@@ -14,7 +21,10 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
     scope.years = getAvailableYears ();
 
     // set up the skills
-    var skill = new Skill ();
+    var skill = new Skill (scope.years);
+    /*for (var i = 0; i < scope.years.length; i++) {
+        skill.skillLevels[] = "";
+    }*/
     scope.skills = [skill];
 
     // checks if more input fields are needed and adds as necessary
@@ -23,7 +33,8 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
         // check if any title is given for the last skill - if so, show another line for input
         var lastSkill = $(scope.skills).get(-1);
         if (lastSkill.title) {
-            scope.skills.push (new Skill ());
+            var skill = new Skill (scope.years);
+            scope.skills.push (skill);
         }
 
         // reset the viewable JSON string

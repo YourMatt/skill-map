@@ -20,7 +20,7 @@
         </tr>
         <tr ng-repeat="skill in skills">
             <td class="col-sm-4"><input type="text" class="form-control input-sm" ng-model="skill.title" ng-change="setInputFields ()"></td>
-            <td ng-repeat="year in years"><input type="text" class="form-control input-sm" value=""/></td>
+            <td ng-repeat="year in years"><input type="text" class="form-control input-sm" ng-model="skill.skillLevels[year-years[0]]" ng-change="setInputFields ()"/></td>
         </tr>
     </table>
 
