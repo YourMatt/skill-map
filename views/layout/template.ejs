@@ -6,7 +6,6 @@
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="js/skill-map.js"></script>
 
@@ -14,14 +13,44 @@
 <body ng-controller="SkillMapController">
 
     <table class="table table-striped">
+        <thead>
         <tr>
             <th>Skill</th>
             <th class="text-center" ng-repeat="year in years">{{year}}</th>
         </tr>
-        <tr ng-repeat="skill in skills">
-            <td class="col-sm-4"><input type="text" class="form-control input-sm" ng-model="skill.title" ng-change="setInputFields ()"></td>
-            <td ng-repeat="year in years"><input type="text" class="form-control input-sm" ng-model="skill.skillLevels[year-years[0]]" ng-change="setInputFields ()"/></td>
+        </thead>
+        <tbody ng-repeat="skill in skills">
+        <tr>
+            <td class="col-sm-4"><input type="text" class="form-control input-sm" placeholder="Skill title" ng-model="skill.title" ng-change="setInputFields ()"></td>
+            <td ng-repeat="year in years"><input type="text" class="form-control input-sm text-center" placeholder="0" ng-model="skill.skillLevels[year-years[0]]" ng-change="setInputFields ()"/></td>
         </tr>
+        <tr>
+            <td colspan="{{years.length + 1}}">
+                <h6 class="pull-left">Milestones:</h6>
+
+                <div class="input-group col-sm-8 col-sm-offset-2" ng-repeat="milestone in skill.milestones">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle input-sm" data-toggle="dropdown">
+                            <span ng-bind="milestone.year || 'Year'"></span> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="year in years">
+                                <a ng-click="milestone.year = year; setInputFields ()">{{year}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <input type="text" class="form-control input-sm" placeholder="Milestone description" ng-model="milestone.text" ng-change="setInputFields ()"/>
+                </div>
+
+                <!--
+                    <span class="col-sm-2"><input type="text" class="form-control input-sm" placeholder="Year"/></span>
+                    <span class="col-sm-6"><input type="text" class="form-control input-sm" placeholder="Milestone Text"/></span>
+                    -->
+
+            </td>
+        </tr>
+        </tbody>
+        <tfoot><tr><td colspan="{{years.length + 1}}"></td></tr></tfoot>
     </table>
 
     <div class="col-sm-12">

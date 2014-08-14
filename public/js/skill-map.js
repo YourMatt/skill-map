@@ -1,14 +1,25 @@
 
 // data model for the skill data
+var Milestone = (function () {
+
+    this.year = "";
+    this.text = "";
+
+});
 var Skill = (function (years) {
+
     this.title = "";
-    this.skillLevels = new Array ();
     this.startYear = years[0];
     this.endYear = years[years.length - 1];
 
+    this.skillLevels = new Array ();
     for (var i = 0; i < years.length; i++) {
         this.skillLevels[this.skillLevels.length] = "";
     }
+
+    this.milestones = new Array ();
+    this.milestones.push (new Milestone ());
+
 });
 
 // set up the angular module
@@ -22,19 +33,25 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
 
     // set up the skills
     var skill = new Skill (scope.years);
-    /*for (var i = 0; i < scope.years.length; i++) {
-        skill.skillLevels[] = "";
-    }*/
     scope.skills = [skill];
 
     // checks if more input fields are needed and adds as necessary
     scope.setInputFields = function (skipJsonReset) {
 
         // check if any title is given for the last skill - if so, show another line for input
-        var lastSkill = $(scope.skills).get(-1);
+        var lastSkill = $(scope.skills).get (-1);
         if (lastSkill.title) {
             var skill = new Skill (scope.years);
             scope.skills.push (skill);
+        }
+
+        // check if any milestones set for any skill - if so, show another line for input
+        for (var i = 0; i < scope.skills.length; i++) {
+            var lastMilestone = $(scope.skills[i].milestones).get (-1);
+            if (lastMilestone.year && lastMilestone.text) {
+                var milestone = new Milestone ();
+                scope.skills[i].milestones.push (milestone);
+            }
         }
 
         // reset the viewable JSON string
@@ -47,14 +64,43 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
     // updates the JSON structure from data provided in the input fields
     scope.loadSkillsJson = function () {
 
+        var newSkills = copyObject (scope.skills);
+
+        // remove the last element if blank
+        if ($(newSkills).get (-1).title == "") {
+            newSkills.pop ();
+        }
+
+        // remove any blank milestones at the end of the milestone list
+        for (var i = 0; i < newSkills.length; i++) {
+            if ($(newSkills[i].milestones).get (-1).year == "") {
+                newSkills[i].milestones.pop ();
+            }
+        }
+
+        scope.skillsJson = angular.toJson (newSkills);
+
+        /*
         // remove the last element if blank - not popping off the end because will affect existing skills without deep copy workaround
         var newSkills = [];
         var maxItem = scope.skills.length - 1;
         for (var i = 0; i < maxItem; i++) {
-            newSkills.push (scope.skills[i]);
+            //newSkills.push (scope.skills[i]);
+            newSkills.push ();
+            newSkills[i].milestones[0].year = "test";
         }
 
+
+
+        if (newSkills.length) {
+            console.log(scope.skills[0].milestones[0].year);
+            console.log(newSkills[0].milestones[0].year);
+        }
+
+
+
         scope.skillsJson = angular.toJson (newSkills);
+        */
 
     };
 
@@ -101,5 +147,12 @@ function getAvailableYears () {
     }
 
     return years;
+
+}
+
+// force an object to be copied instead of referenced
+function copyObject (object) {
+
+    return JSON.parse (JSON.stringify (object));
 
 }
