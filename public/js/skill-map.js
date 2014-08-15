@@ -47,11 +47,13 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
 
         // check if any milestones set for any skill - if so, show another line for input
         for (var i = 0; i < scope.skills.length; i++) {
-            var lastMilestone = $(scope.skills[i].milestones).get (-1);
-            if (lastMilestone.year && lastMilestone.text) {
-                var milestone = new Milestone ();
-                scope.skills[i].milestones.push (milestone);
+            if (scope.skills[i].milestones.length) {
+                var lastMilestone = $(scope.skills[i].milestones).get(-1);
+                if (lastMilestone.year && lastMilestone.text) {
+                    scope.skills[i].milestones.push (new Milestone ());
+                }
             }
+            else scope.skills[i].milestones.push (new Milestone ());
         }
 
         // reset the viewable JSON string
@@ -80,28 +82,6 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
 
         scope.skillsJson = angular.toJson (newSkills);
 
-        /*
-        // remove the last element if blank - not popping off the end because will affect existing skills without deep copy workaround
-        var newSkills = [];
-        var maxItem = scope.skills.length - 1;
-        for (var i = 0; i < maxItem; i++) {
-            //newSkills.push (scope.skills[i]);
-            newSkills.push ();
-            newSkills[i].milestones[0].year = "test";
-        }
-
-
-
-        if (newSkills.length) {
-            console.log(scope.skills[0].milestones[0].year);
-            console.log(newSkills[0].milestones[0].year);
-        }
-
-
-
-        scope.skillsJson = angular.toJson (newSkills);
-        */
-
     };
 
     // updates the skills with data provided within the JSON viewer
@@ -120,14 +100,14 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
     // prompts to download the SVG image - sends new request to server to ensure no scaling
     scope.promptDownload = function () {
 
-        window.location = "skillmap.svg?download=1&instructions=" + scope.skillsJson;
+        window.location = "skillmap.svg?download=1&instructions=" + encodeURIComponent (scope.skillsJson);
 
     },
 
     // rebuilds the image with the instructions provided by the current skill data
     scope.regenerateSvgImage = function () {
 
-        $("#results-image").attr ("src", "skillmap.svg?instructions=" + scope.skillsJson);
+        $("#results-image").attr ("src", "skillmap.svg?instructions=" + encodeURIComponent (scope.skillsJson));
 
     };
 

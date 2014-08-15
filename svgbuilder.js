@@ -19,10 +19,11 @@ exports.skillmap.svgbuilder = {
     // specify the position information for x/y coordinates of elements
     pos: {
         elementTopStart: 0.35,              // top position of first graph
-        elementTopSpacing: 0.5,            // spacing between top positions of graphs
+        elementTopSpacing: 0.5,             // spacing between top positions of graphs
         labelLeftOffset: 1.5,               // right border position of text labels to left of graphs
         labelTopOffset: 0.15,               // distance below the top of the graph where the bottom of the text displays
-        graphLeftOffset: 1.75               // left border position of the graphs
+        graphLeftOffset: 1.75,              // left border position of the graphs
+        milestoneGraphPadding: 0.35         // the min distance from the borders of the graph, where a milestone marker can sit
     },
 
     // specify the size information for width/height of elements
@@ -33,7 +34,7 @@ exports.skillmap.svgbuilder = {
         fontMilestone: 6,                   // size of the milestone text under the graph
         graphHeight: 0.15,                  // height of the graph
         graphLineHeight: 0.01,              // height of the line under the graph
-        milestoneLineHeight: 0.075,         // line height for the milestone text
+        milestoneLineHeight: 0.085,         // line height for the milestone text
         milestoneMarker: 0.04,              // the radius of the circle marking a milestone
         pageWidth: 7.5                      // the width the image
     },
@@ -133,31 +134,51 @@ exports.skillmap.svgbuilder = {
                 "@class": "databox"
             }});
 
-            // add a milestone marker
-            var milestoneOffset = 1.75; // temporary until adding real milestones
-            elements.push ({ circle: {
-                "@cx": this.getPositionUnits (this.pos.graphLeftOffset + milestoneOffset),
-                "@cy": this.getPositionUnits (lineTopPosition),
-                "@r": this.getPositionUnits (this.size.milestoneMarker),
-                "@fill": this.colors.line
-            }});
+            // add the milestones
+            for (var j = 0; j < skill.milestones.length; j++) {
+                var milestone = skill.milestones[j];
 
-            // add milestone text
-            elements.push ({ text: {
-                "#list": [
-                    { tspan: {
-                        "@x": this.getPositionUnits (this.pos.graphLeftOffset + milestoneOffset),
-                        "@y": this.getPositionUnits (lineTopPosition + this.size.milestoneMarker + this.size.milestoneLineHeight),
-                        "@class": "milestone",
-                        "#text": "This is a"
-                    }},
-                    { tspan: {
-                        "@x": this.getPositionUnits (this.pos.graphLeftOffset + milestoneOffset),
-                        "@y": this.getPositionUnits (lineTopPosition + this.size.milestoneMarker + this.size.milestoneLineHeight * 2),
-                        "@class": "milestone",
-                        "#text": "sample milestone"
-                    }}]
-            }});
+                // add a milestone marker
+                var milestoneOffsetPercent = (milestone.year - skill.startYear) / (skill.endYear - skill.startYear);
+                var milestoneOffset = this.pos.milestoneGraphPadding + (this.size.pageWidth - this.pos.graphLeftOffset - this.pos.milestoneGraphPadding * 2) * milestoneOffsetPercent;
+                elements.push({ circle: {
+                    "@cx": this.getPositionUnits(this.pos.graphLeftOffset + milestoneOffset),
+                    "@cy": this.getPositionUnits(lineTopPosition),
+                    "@r": this.getPositionUnits(this.size.milestoneMarker),
+                    "@fill": this.colors.line
+                }});
+
+                var textLine1 = "";
+                var textLine2 = "";
+
+                if (milestone.text.length <= 10 || milestone.text.indexOf (" ") < 0) {
+                    textLine1 = milestone.text;
+                }
+                else {
+                    var textLines = this.getSplitText (milestone.text);
+                    textLine1 = textLines[0];
+                    textLine2 = textLines[1];
+                }
+
+                // add milestone text
+                elements.push({ text: {
+                    "#list": [
+                        { tspan: {
+                            "@x": this.getPositionUnits(this.pos.graphLeftOffset + milestoneOffset),
+                            "@y": this.getPositionUnits(lineTopPosition + this.size.milestoneMarker + this.size.milestoneLineHeight),
+                            "@class": "milestone",
+                            "#text": textLine1
+                        }},
+                        { tspan: {
+                            "@x": this.getPositionUnits(this.pos.graphLeftOffset + milestoneOffset),
+                            "@y": this.getPositionUnits(lineTopPosition + this.size.milestoneMarker + this.size.milestoneLineHeight * 2),
+                            "@class": "milestone",
+                            "#text": textLine2
+                        }}
+                    ]
+                }});
+
+            }
 
         }
 
@@ -217,6 +238,33 @@ exports.skillmap.svgbuilder = {
         svg.dtd (); // doctype svg
 
         return svg.end ({pretty: true});
+
+    },
+
+    // splits the text into 2 lines, breaking on the center-most space
+    getSplitText: function (text) {
+
+        var textLines = new Array ();
+
+        var middle = Math.ceil (text.length / 2);
+        for (var i = 0; i <= middle; i++) {
+
+            var breakPosition = 0;
+            if (text.charAt (middle - i) == " ") {
+                breakPosition = middle - i;
+            }
+            else if (text.charAt (middle + i) == " ") {
+                breakPosition = middle + i;
+            }
+
+            if (breakPosition) {
+                textLines[0] = text.substring (0, breakPosition);
+                textLines[1] = text.substring (breakPosition + 1);
+                break;
+            }
+        }
+
+        return textLines;
 
     },
 
