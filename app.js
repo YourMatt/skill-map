@@ -1,30 +1,14 @@
 
 var express = require ("express"),
-    util = require ("util"),
     skillmapsvg = require ("./svgbuilder.js");
 
 var app = express ();
 app.use (express.static (__dirname + "/public"));
 
-// load raw post data to req rawBody param
-app.use(function(req, res, next) {
-
-    req.rawBody = "";
-
-    req
-        .on ("data", function(chunk) {
-            req.rawBody += chunk;
-        })
-        .on ("end", function() {
-            next();
-        });
-
-});
-
 // handle SVG requests
 app.route ("/*.svg").all (function (req, res) {
 
-    var instructions = req.rawBody || req.query.instructions || ""; // pulls from raw post, then query string if none provided
+    var instructions = req.query.instructions;
     var download = (req.query.download);
 
     res.type ("svg");
@@ -36,7 +20,8 @@ app.route ("/*.svg").all (function (req, res) {
     catch (err) {}
 
     // build the skill map SVG
-    var svg = skillmapsvg.skillmap.svgbuilder.buildSkillMap (skills, download);
+    if (download) skillmapsvg.skillmap.svgbuilder.size.canvasMultiplier = 1;
+    var svg = skillmapsvg.skillmap.svgbuilder.buildSkillMap (skills);
 
     // set to prompt if requesting download
     if (download) {
