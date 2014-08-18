@@ -23,8 +23,8 @@ var Skill = (function (years) {
 });
 
 // set up the angular module
-var app = angular.module ("skillMap", []);
-app.controller ("SkillMapController", ["$scope", function (scope) {
+var app = angular.module ("skillMap", ["ngCookies"]);
+app.controller ("SkillMapController", ["$scope", "$cookieStore", function (scope, cookieStore) {
 
     scope.skills = [];
 
@@ -32,7 +32,7 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
     scope.years = getAvailableYears ();
 
     // set up the skills
-    var skill = new Skill (scope.years);
+    var skill = new Skill(scope.years);
     scope.skills = [skill];
 
     // checks if more input fields are needed and adds as necessary
@@ -81,6 +81,7 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
         }
 
         scope.skillsJson = angular.toJson (newSkills);
+        cookieStore.put ('skills', scope.skillsJson); // add to cookie so last view retained between visits
 
     };
 
@@ -120,6 +121,12 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
         scope.viewingJson = false;
     };
 
+    // load the skills from the cookie if available
+    if (cookieStore.get("skills")) {
+        scope.skillsJson = cookieStore.get("skills");
+        scope.reloadSkillsFromJson();
+    }
+    
     // load the initial JSON string
     scope.loadSkillsJson ();
 
