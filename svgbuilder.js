@@ -23,7 +23,7 @@ exports.skillmap.svgbuilder = {
         labelLeftOffset: 1.5,               // right border position of text labels to left of graphs
         labelTopOffset: 0.15,               // distance below the top of the graph where the bottom of the text displays
         graphLeftOffset: 1.75,              // left border position of the graphs
-        milestoneGraphPadding: 0.35,        // the min distance from the borders of the graph, where a milestone marker can sit
+        milestoneGraphPadding: 0.3,         // the min distance from the borders of the graph, where a milestone marker can sit
         yearTop: 0.15                       // the position for placement of year labels
     },
 
