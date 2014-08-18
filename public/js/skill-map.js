@@ -102,13 +102,22 @@ app.controller ("SkillMapController", ["$scope", function (scope) {
 
         window.location = "skillmap.svg?download=1&instructions=" + encodeURIComponent (scope.skillsJson);
 
-    },
+    };
 
     // rebuilds the image with the instructions provided by the current skill data
     scope.regenerateSvgImage = function () {
 
         $("#results-image").attr ("src", "skillmap.svg?instructions=" + encodeURIComponent (scope.skillsJson));
 
+    };
+
+    // toggle the JSON field
+    scope.viewingJson = false;
+    scope.viewJson = function () {
+        scope.viewingJson = true;
+    };
+    scope.hideJson = function () {
+        scope.viewingJson = false;
     };
 
     // load the initial JSON string
@@ -136,3 +145,8 @@ function copyObject (object) {
     return JSON.parse (JSON.stringify (object));
 
 }
+
+// add the bootstrap tooltip handler for showing years on the input fields
+$(document).ready (function () {
+    $("input.years").tooltip ();
+});

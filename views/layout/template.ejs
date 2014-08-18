@@ -24,7 +24,7 @@
         <tbody ng-repeat="skill in skills">
         <tr>
             <td class="col-sm-4"><input type="text" class="form-control input-sm" placeholder="Skill title" ng-model="skill.title" ng-change="setInputFields ()"></td>
-            <td ng-repeat="year in years"><input type="text" class="form-control input-sm text-center" placeholder="0" ng-model="skill.skillLevels[year-years[0]]" ng-change="setInputFields ()"/></td>
+            <td ng-repeat="year in years"><input type="text" class="form-control input-sm text-center years" placeholder="0" data-toggle="tooltip" data-placement="top" title="{{year}}" ng-model="skill.skillLevels[year-years[0]]" ng-change="setInputFields ()"/></td>
         </tr>
         <tr>
             <td colspan="{{years.length + 1}}">
@@ -50,13 +50,15 @@
         <tfoot><tr><td colspan="{{years.length + 1}}"></td></tr></tfoot>
     </table>
 
-    <div class="col-sm-12">
-        <textarea class="form-control" rows="5" ng-model="skillsJson" ng-change="reloadSkillsFromJson ()"></textarea>
-    </div>
-
-    <div class="col-sm-12 text-center margin-top-10">
+    <div class="col-sm-12 text-center">
         <button type="button" class="btn btn-primary" ng-click="regenerateSvgImage ()">Regenerate Image</button>
         <button type="button" class="btn btn-primary" ng-click="promptDownload ()">Download Image</button>
+        <button type="button" class="btn btn-primary" ng-click="viewJson ()" ng-show="!viewingJson">View JSON</button>
+        <button type="button" class="btn btn-primary" ng-click="hideJson ()" ng-show="viewingJson">Hide JSON</button>
+    </div>
+
+    <div class="col-sm-12 margin-top-10" ng-show="viewingJson">
+        <textarea class="form-control" rows="5" ng-model="skillsJson" ng-change="reloadSkillsFromJson ()"></textarea>
     </div>
 
     <div class="col-sm-12 margin-top-10">
